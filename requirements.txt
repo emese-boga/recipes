@@ -1,0 +1,9 @@
+psycopg2-binary
+django
+django-ninja
+pytest
+pytest-django
+coverage
+black
+ruff
+whitenoise

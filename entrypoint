@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+set -o allexport; source .version; set +o allexport
+
+check_environment()
+{
+    for key in DB_HOST DB_PORT DB_USER DB_PASS DB_NAME SECRET_KEY
+    do
+        if [[ -z ${!key} ]]; then
+            printf "ERROR: $key environment variable is required\n"
+            exit -1
+        fi
+    done
+}
+before_start()
+{
+    if [[ -n $DB_HOST ]]; then
+        printf "\t..: Waiting for $DB_HOST:$DB_PORT\n"
+        while ! nc -z $DB_HOST $DB_PORT; do
+        sleep 0.1
+        done
+    fi
+}
+
+main()
+{
+    case $1 in
+        shell)
+            bash
+            ;;
+        selfcheck)
+            coverage run -m pytest ./src --junitxml=/app/htmlcov/report.xml
+            coverage html
+            coverage xml
+            printf "total-coverage="; coverage report --format=total
+            ruff check ./src
+            ;;
+        develop)
+            cd /app/src
+            printf "\t..: Starting the developer loop\n"
+            find ./ -name "*.py" | entr -rd ./manage.py runserver 0.0.0.0:80
+            ;;
+        start)
+            check_environment
+            before_start
+            python ./src/manage.py collectstatic --no-input
+            find ./ -name "*.py" | entr -rdn ./src/manage.py runserver 0.0.0.0:80
+            ;;
+        *)
+            python ./src/manage.py collectstatic --no-input
+            exec ./src/manage.py "$@"
+            ;;
+    esac
+}
+
+printf "\t..: Running API version: $VERSION ($CONTEXT)\n"
+main "$@"

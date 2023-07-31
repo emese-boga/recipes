@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CWD=$(pwd)
+IMAGE_NAME=$(basename $CWD)
+
+docker build \
+    --build-arg CONTEXT=local \
+    --build-arg BUILDKIT_INLINE_CACHE=1 \
+    --tag "$IMAGE_NAME" \
+    .
+
+docker run --rm -it --env-file .env \
+    --network=host --privileged \
+    --add-host host.docker.internal:host-gateway \
+    --volume "$CWD/coverage:/app/coverage" \
+    --volume "$CWD/public:/app/htmlcov" \
+    "$IMAGE_NAME" $@
+
+printf "..: Done :..\n"
