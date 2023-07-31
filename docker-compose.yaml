@@ -1,0 +1,37 @@
+services:
+  recipes-host:
+    image: postgres
+    ports:
+      - "$DB_PORT:$DB_PORT"
+    environment:
+      - PGPORT=${DB_PORT}
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=${DB_ROOT_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - APP_USER=${DB_USER}
+      - APP_PASS=${DB_PASS}
+    volumes:
+      - ./init-recipes:/docker-entrypoint-initdb.d
+      - local-data:/var/lib/postgresql/recipes_data
+
+  recipes-api:
+    build: .
+    ports:
+      - "$PORT:80"
+    depends_on:
+      - recipes-host
+    volumes:
+      - ./src:/app/src
+      - ./coverage:/app/coverage
+      - ./public:/app/htmlcov
+
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_HOST=recipes-host
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+
+volumes:
+  local-data:
