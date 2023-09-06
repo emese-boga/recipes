@@ -30,6 +30,7 @@ exclude = [
     "dist",
     "node_modules",
     "venv",
+    "./src/recipes_main/testing_settings.py",
 ]
 
 # Same as Black.
