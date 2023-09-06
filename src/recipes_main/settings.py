@@ -21,6 +21,7 @@ DEBUG = True
 
 
 # Application definition
+CUSTOM_APPS = ["recipes"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -29,7 +30,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-]
+] + CUSTOM_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
