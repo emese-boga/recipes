@@ -12,6 +12,10 @@ def main():
         shell=True,
         text=True,
     )
+    if not modified_files:
+        print("Nothing to check...")
+        exit(0)
+
     has_failed = False
 
     print("Black output:")
