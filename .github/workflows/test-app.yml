@@ -1,0 +1,15 @@
+name: CI for Testing
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Make envfile
+        run: |
+          touch .env
+      - name: Run test
+        run: ./run selfcheck
