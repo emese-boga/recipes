@@ -17,3 +17,16 @@ DB_HOST=recipes_host
 SECRET_KEY=3we83YzHaGQyCPWoQhfw7qndhndrJIoI
 ```
 
+# Running the application
+
+In the main directory of the project execute:
+```bash
+docker compose up --build 
+```
+
+If using the environment from above access the following page:
+http://localhost:8002
+
+
+To try out the APIs access:
+http://localhost:8002/api/docs
