@@ -15,7 +15,9 @@ def test_create_recipe(client):
     response = client.post(url, recipe, content_type="application/json")
 
     assert response.status_code == 201
-    assert response.json().get("data")
+    data = response.json()
+    assert data
+    assert data.get("data")
 
 
 @pytest.mark.django_db
@@ -58,6 +60,7 @@ def test_create_invalid_recipe_existing_name(client, simple_recipe):
 
     assert response.status_code == 400
     errors = response.json()
+    assert errors
     assert errors.get("error")
 
 
@@ -69,8 +72,9 @@ def test_get_all_recipes(client, simple_recipe):
 
     assert response.status_code == 200
     recipes_list = response.json()
+    assert recipes_list
+    assert recipes_list.get("data")
     assert isinstance(recipes_list.get("data"), list)
-    assert recipes_list, "List was empty, we expect at least one element"
 
 
 @pytest.mark.django_db
@@ -81,6 +85,8 @@ def test_get_existing_recipe(client, simple_recipe):
 
     assert response.status_code == 200
     recipe = response.json()
+    assert recipe
+    assert recipe.get("data")
     assert recipe.get("data").get("name") == simple_recipe.name
 
 
@@ -126,6 +132,7 @@ def test_update_invalid_recipe(client, recipe_to_update):
 
     assert response.status_code == 400
     errors = response.json()
+    assert errors
     assert errors.get("error")
 
 
