@@ -1,6 +1,6 @@
 psycopg2-binary
 django
-django-ninja
+djangorestframework
 pytest
 pytest-django
 coverage

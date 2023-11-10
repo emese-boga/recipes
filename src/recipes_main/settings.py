@@ -11,14 +11,15 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-from os import environ
+from os import environ, path
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+WORKSPACE_DIR = Path.cwd()
 ALLOWED_HOSTS = ["*"]
 SECRET_KEY = environ.get("SECRET_KEY")
-DEBUG = True
+DEBUG = False
 
 # Application definition
 CUSTOM_APPS = ["recipes", "ingredients"]
@@ -30,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
 ] + CUSTOM_APPS
 
 MIDDLEWARE = [
@@ -123,8 +125,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+STATIC_ROOT = path.join(WORKSPACE_DIR, "static")
 STATIC_URL = "static/"
-STATIC_ROOT = "/app/static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

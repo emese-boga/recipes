@@ -5,7 +5,7 @@ from uuid import uuid4
 
 @pytest.mark.django_db
 def test_create_recipe(client):
-    url = reverse("api:recipes")
+    url = reverse("recipes_list_create")
     recipe = {
         "name": "Recipe testing",
         "description": "Recipe for testing",
@@ -14,13 +14,13 @@ def test_create_recipe(client):
 
     response = client.post(url, recipe, content_type="application/json")
 
-    assert response.status_code == 200
-    assert response.json().get("id")
+    assert response.status_code == 201
+    assert response.json().get("data")
 
 
 @pytest.mark.django_db
 def test_create_invalid_recipe(client):
-    url = reverse("api:recipes")
+    url = reverse("recipes_list_create")
     recipe = {
         "name": list({1, 2, 3}),
         "description": "Recipe for testing",
@@ -29,51 +29,65 @@ def test_create_invalid_recipe(client):
 
     response = client.post(url, recipe, content_type="application/json")
 
-    assert response.status_code == 422
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db
-def test_create_invalid_recipe_existing_id(client, simple_recipe):
-    url = reverse("api:recipes")
+def test_create_invalid_recipe_missing_field(client):
+    url = reverse("recipes_list_create")
     recipe = {
-        "id": simple_recipe.id,
-        "name": "Test name",
+        "name": "Recipe testing",
+        "description": "Recipe for testing",
+    }
+
+    response = client.post(url, recipe, content_type="application/json")
+
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db
+def test_create_invalid_recipe_existing_name(client, simple_recipe):
+    url = reverse("recipes_list_create")
+    recipe = {
+        "name": f"{simple_recipe.name}",
         "description": "Recipe for testing",
         "instructions": "Run tests to complete recipe",
     }
 
     response = client.post(url, recipe, content_type="application/json")
 
-    assert response.status_code == 409
+    assert response.status_code == 400
+    errors = response.json()
+    assert errors.get("error")
 
 
 @pytest.mark.django_db
 def test_get_all_recipes(client, simple_recipe):
-    url = reverse("api:recipes")
+    url = reverse("recipes_list_create")
 
     response = client.get(url)
 
     assert response.status_code == 200
     recipes_list = response.json()
-    assert isinstance(recipes_list, list)
+    assert isinstance(recipes_list.get("data"), list)
     assert recipes_list, "List was empty, we expect at least one element"
 
 
 @pytest.mark.django_db
 def test_get_existing_recipe(client, simple_recipe):
-    url = reverse("api:recipes", kwargs=dict(recipe_id=simple_recipe.id))
+    url = reverse("recipes", kwargs=dict(id=simple_recipe.id))
 
     response = client.get(url)
 
     assert response.status_code == 200
     recipe = response.json()
-    assert recipe.get("name") == simple_recipe.name
+    assert recipe.get("data").get("name") == simple_recipe.name
 
 
 @pytest.mark.django_db
 def test_get_missing_recipe(client):
     recipe_id = uuid4()
-    url = reverse("api:recipes", kwargs=dict(recipe_id=recipe_id))
+    url = reverse("recipes", kwargs=dict(id=recipe_id))
 
     response = client.get(url)
 
@@ -82,30 +96,21 @@ def test_get_missing_recipe(client):
 
 @pytest.mark.django_db
 def test_update_recipe(client, recipe_to_update):
-    url = reverse("api:recipes", kwargs=dict(recipe_id=recipe_to_update.id))
-    updated_recipe = {
-        "name": "Updated test recipe",
-        "description": "Updated description",
-        "instructions": "Updated instructions",
-    }
+    url = reverse("recipes", kwargs=dict(id=str(recipe_to_update.id)))
+    updated_recipe = {"description": "Updated description"}
 
     response = client.put(url, updated_recipe, content_type="application/json")
 
     assert response.status_code == 200
-    assert response.json()["updated"]
     recipe_to_update.refresh_from_db()
-    assert recipe_to_update.name == updated_recipe.get("name")
+    assert recipe_to_update.description == updated_recipe.get("description")
 
 
 @pytest.mark.django_db
 def test_update_missing_recipe(client):
-    recipe_id = uuid4()
-    url = reverse("api:recipes", kwargs=dict(recipe_id=recipe_id))
-    updated_recipe = {
-        "name": "Updated test recipe",
-        "description": "Updated description",
-        "instructions": "Updated instructions",
-    }
+    recipe_id = str(uuid4())
+    url = reverse("recipes", kwargs=dict(id=recipe_id))
+    updated_recipe = {"name": "Updated test recipe"}
 
     response = client.put(url, updated_recipe, content_type="application/json")
 
@@ -114,13 +119,20 @@ def test_update_missing_recipe(client):
 
 @pytest.mark.django_db
 def test_update_invalid_recipe(client, recipe_to_update):
-    url = reverse("api:recipes", kwargs=dict(recipe_id=recipe_to_update.id))
-    updated_recipe = {
-        "all_ingredients": "Patience",
-        "description": "Updated description",
-        "instructions": "Updated instructions",
-    }
+    url = reverse("recipes", kwargs=dict(id=str(recipe_to_update.id)))
+    updated_recipe = {"name": "????????????"}
 
     response = client.put(url, updated_recipe, content_type="application/json")
 
-    assert response.status_code == 422
+    assert response.status_code == 400
+    errors = response.json()
+    assert errors.get("error")
+
+
+@pytest.mark.django_db
+def test_delete_not_implemented(client, recipe_to_update):
+    url = reverse("recipes", kwargs=dict(id=str(recipe_to_update.id)))
+
+    response = client.delete(url, content_type="application/json")
+
+    assert response.status_code == 405
