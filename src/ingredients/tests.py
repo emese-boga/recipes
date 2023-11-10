@@ -13,7 +13,9 @@ def test_create_ingredient(client):
     response = client.post(url, ingredient, content_type="application/json")
 
     assert response.status_code == 201
-    assert response.json().get("data")
+    data = response.json()
+    assert data
+    assert data.get("data")
 
 
 @pytest.mark.django_db
@@ -38,6 +40,7 @@ def test_create_invalid_ingredient_existing_name(client, simple_ingredient):
 
     assert response.status_code == 400
     errors = response.json()
+    assert errors
     assert errors.get("error")
 
 
@@ -49,8 +52,9 @@ def test_get_all_ingredients(client, simple_ingredient):
 
     assert response.status_code == 200
     ingredients_list = response.json()
+    assert ingredients_list
+    assert ingredients_list.get("data")
     assert isinstance(ingredients_list.get("data"), list)
-    assert ingredients_list, "List was empty, we expect at least one element"
 
 
 @pytest.mark.django_db
@@ -61,7 +65,10 @@ def test_get_existing_ingredient(client, simple_ingredient):
 
     assert response.status_code == 200
     ingredient = response.json()
-    assert ingredient.get("data").get("name") == simple_ingredient.name
+    assert ingredient
+    ingredient_data = ingredient.get("data")
+    assert ingredient_data
+    assert ingredient_data.get("name") == simple_ingredient.name
 
 
 @pytest.mark.django_db
@@ -112,6 +119,7 @@ def test_update_invalid_name(client, ingredient_to_update):
 
     assert response.status_code == 400
     errors = response.json()
+    assert errors
     assert errors.get("error")
 
 
