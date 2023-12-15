@@ -35,20 +35,11 @@ main()
             printf "total-coverage="; coverage report --format=total
             ruff check ./src
             ;;
-        develop)
-            cd /app/src
-            printf "\t..: Starting the developer loop\n"
-            find ./ -name "*.py" | entr -rd ./manage.py runserver 0.0.0.0:80
-            ;;
         start)
             check_environment
             before_start
             python ./src/manage.py collectstatic --no-input
             find ./ -name "*.py" | entr -rdn ./src/manage.py runserver 0.0.0.0:80
-            ;;
-        *)
-            python ./src/manage.py collectstatic --no-input
-            exec ./src/manage.py "$@"
             ;;
     esac
 }
