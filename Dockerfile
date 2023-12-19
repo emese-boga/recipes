@@ -14,14 +14,10 @@ RUN mkdir -p /app/src \
     && mkdir -p /app/htmlcov
 
 WORKDIR /app
-COPY entrypoint .coveragerc .version pyproject.toml poetry.lock /app/
+COPY entrypoint .coveragerc .version pyproject.toml requirements.txt /app/
 COPY ./src /app/src
 
-ENV POETRY_VIRTUALENVS_CREATE=false
-
-RUN pip install "poetry>=1.2" \
-    && poetry export --without-hashes -o requirements.txt \
-    && pip install --no-cache-dir --upgrade pip \
+RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
 ARG CONTEXT=local
