@@ -13,3 +13,10 @@ jobs:
           touch .env
       - name: Run test
         run: ./run selfcheck
+      - name: Upload coverage results to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          files: /app/coverage/coverage.xml
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
