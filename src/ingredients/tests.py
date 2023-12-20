@@ -19,7 +19,7 @@ def test_create_ingredient(client):
 
 
 @pytest.mark.django_db
-def test_create_invalid_ingredient(client):
+def test_create_ingredient_with_invalid_name_field_type(client):
     url = reverse("ingredients_list_create")
     ingredient = {
         "name": dict(wrong_type=True),
@@ -29,8 +29,9 @@ def test_create_invalid_ingredient(client):
 
     assert response.status_code == 400
 
+
 @pytest.mark.django_db
-def test_create_invalid_ingredient_existing_name(client, simple_ingredient):
+def test_create_invalid_ingredient_with_existing_name(client, simple_ingredient):
     url = reverse("ingredients_list_create")
     ingredient = {
         "name": simple_ingredient.name,
@@ -109,7 +110,7 @@ def test_update_missing_ingredient(client):
 
 
 @pytest.mark.django_db
-def test_update_invalid_name(client, ingredient_to_update):
+def test_update_ingredient_with_invalid_name(client, ingredient_to_update):
     url = reverse("ingredients", kwargs=dict(id=ingredient_to_update.id))
     updated_ingredient = {
         "name": "???????????????",
@@ -124,7 +125,7 @@ def test_update_invalid_name(client, ingredient_to_update):
 
 
 @pytest.mark.django_db
-def test_delete_not_implemented(client, ingredient_to_update):
+def test_delete_operation_not_supported(client, ingredient_to_update):
     url = reverse("ingredients", kwargs=dict(id=str(ingredient_to_update.id)))
 
     response = client.delete(url, content_type="application/json")
