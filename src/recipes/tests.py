@@ -4,7 +4,7 @@ from uuid import uuid4
 
 
 @pytest.mark.django_db
-def test_create_recipe(client):
+def test_create_recipe_valid_data(client):
     url = reverse("recipes_list_create")
     recipe = {
         "name": "Recipe testing",
@@ -21,7 +21,7 @@ def test_create_recipe(client):
 
 
 @pytest.mark.django_db
-def test_create_invalid_recipe(client):
+def test_create_recipe_invalid_name_field_type(client):
     url = reverse("recipes_list_create")
     recipe = {
         "name": list({1, 2, 3}),
@@ -35,7 +35,7 @@ def test_create_invalid_recipe(client):
 
 
 @pytest.mark.django_db
-def test_create_invalid_recipe_missing_field(client):
+def test_create_recipe_missing_mandatory_field(client):
     url = reverse("recipes_list_create")
     recipe = {
         "name": "Recipe testing",
@@ -48,7 +48,7 @@ def test_create_invalid_recipe_missing_field(client):
 
 
 @pytest.mark.django_db
-def test_create_invalid_recipe_existing_name(client, simple_recipe):
+def test_create_invalid_recipe_with_existing_name_fails(client, simple_recipe):
     url = reverse("recipes_list_create")
     recipe = {
         "name": f"{simple_recipe.name}",
@@ -101,7 +101,7 @@ def test_get_missing_recipe(client):
 
 
 @pytest.mark.django_db
-def test_update_recipe(client, recipe_to_update):
+def test_update_recipe_valid_data(client, recipe_to_update):
     url = reverse("recipes", kwargs=dict(id=str(recipe_to_update.id)))
     updated_recipe = {"description": "Updated description"}
 
@@ -124,7 +124,7 @@ def test_update_missing_recipe(client):
 
 
 @pytest.mark.django_db
-def test_update_invalid_recipe(client, recipe_to_update):
+def test_update_recipe_with_invalid_name_fails(client, recipe_to_update):
     url = reverse("recipes", kwargs=dict(id=str(recipe_to_update.id)))
     updated_recipe = {"name": "????????????"}
 
@@ -137,7 +137,7 @@ def test_update_invalid_recipe(client, recipe_to_update):
 
 
 @pytest.mark.django_db
-def test_delete_not_implemented(client, recipe_to_update):
+def test_delete_operation_not_supported(client, recipe_to_update):
     url = reverse("recipes", kwargs=dict(id=str(recipe_to_update.id)))
 
     response = client.delete(url, content_type="application/json")

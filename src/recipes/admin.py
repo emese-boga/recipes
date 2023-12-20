@@ -2,4 +2,9 @@ from django.contrib import admin
 
 from .models import Recipe
 
-admin.site.register(Recipe)
+
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "description", "created")
+
+
+admin.site.register(Recipe, RecipeAdmin)

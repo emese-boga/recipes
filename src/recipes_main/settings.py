@@ -22,7 +22,7 @@ SECRET_KEY = environ.get("SECRET_KEY")
 DEBUG = False
 
 # Application definition
-CUSTOM_APPS = ["recipes", "ingredients"]
+CUSTOM_APPS = ["recipes", "ingredients", "units"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
