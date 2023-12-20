@@ -1,3 +1,5 @@
+![Coverage](https://img.shields.io/codecov/c/github/emese-boga/recipes)
+
 # Recipes
 
 

@@ -14,7 +14,7 @@ jobs:
       - name: Run test
         run: ./run selfcheck
       - name: Upload coverage results to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           files: /app/coverage/coverage.xml
         env:
