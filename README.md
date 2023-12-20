@@ -1,4 +1,4 @@
-![Coverage](https://img.shields.io/codecov/c/github/emese-boga/recipes)
+[![Coverage](https://img.shields.io/codecov/c/github/emese-boga/recipes)](https://app.codecov.io/gh/emese-boga/recipes)
 
 # Recipes
 
